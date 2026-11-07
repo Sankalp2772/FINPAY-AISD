@@ -63,27 +63,32 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900 via-slate-900 to-black flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative ambient background glows */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="max-w-md w-full bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-indigo-950/40 border border-white/20 overflow-hidden relative z-10">
         {/* Header */}
-        <div className="bg-blue-600 p-6 text-white text-center relative">
-          <div className="inline-flex p-3 bg-white/10 rounded-2xl mb-3 backdrop-blur-xs">
+        <div className="bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 p-8 text-white text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-white/5 opacity-50 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+          <div className="inline-flex p-3.5 bg-white/15 backdrop-blur-md rounded-2xl mb-3 shadow-inner ring-1 ring-white/25 relative">
             <CreditCard className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">FinPay Wallet</h1>
-          <p className="text-blue-100 text-xs mt-1">Student Wallet & Payment Management System</p>
-          <div className="text-[10px] bg-blue-700/60 inline-block px-2.5 py-0.5 rounded-full mt-2 font-mono">
-            ACADEMIC FULL-STACK DEMO
+          <h1 className="text-3xl font-extrabold tracking-tight relative">FinPay</h1>
+          <p className="text-blue-100/90 text-xs mt-1.5 font-medium tracking-wide relative">Student Digital Wallet & Campus Ecosystem</p>
+          <div className="inline-block mt-3 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-semibold text-white tracking-wider uppercase border border-white/20 shadow-sm relative">
+            Academic Full-Stack Demo
           </div>
         </div>
 
         {/* Tab switch */}
-        <div className="flex border-b border-slate-200 bg-slate-50/50">
+        <div className="flex border-b border-slate-200/80 bg-slate-50/80 p-1.5 gap-1.5">
           <button
             type="button"
             onClick={() => { setIsRegister(false); setError(''); }}
-            className={`flex-1 py-3 text-sm font-semibold text-center transition-colors ${
-              !isRegister ? 'text-blue-600 border-b-2 border-blue-600 bg-white' : 'text-slate-500 hover:text-slate-700'
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl text-center transition-all duration-200 ${
+              !isRegister ? 'text-indigo-600 bg-white shadow-sm ring-1 ring-slate-200/60' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             Sign In
@@ -91,8 +96,8 @@ export const LoginPage = () => {
           <button
             type="button"
             onClick={() => { setIsRegister(true); setError(''); }}
-            className={`flex-1 py-3 text-sm font-semibold text-center transition-colors ${
-              isRegister ? 'text-blue-600 border-b-2 border-blue-600 bg-white' : 'text-slate-500 hover:text-slate-700'
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl text-center transition-all duration-200 ${
+              isRegister ? 'text-indigo-600 bg-white shadow-sm ring-1 ring-slate-200/60' : 'text-slate-500 hover:text-slate-800'
             }`}
           >
             Register Student
@@ -222,7 +227,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm shadow-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full mt-2 bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 hover:from-indigo-500 hover:to-blue-600 text-white font-semibold py-3 px-4 rounded-xl text-sm shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/35 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -237,23 +242,25 @@ export const LoginPage = () => {
 
           {/* Quick Demo Credentials Autofill */}
           <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 text-center">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-center">
               Academic Demo Quick-Fill
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => handleQuickFill('admin')}
-                className="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-medium text-center transition"
+                className="flex items-center justify-center gap-1.5 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 transition shadow-2xs"
               >
-                Fill Admin (admin123)
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Admin Demo
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickFill('student')}
-                className="py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-xs font-medium text-center transition"
+                className="flex items-center justify-center gap-1.5 py-2 px-3 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-semibold border border-indigo-200 transition shadow-2xs"
               >
-                Fill Student (student123)
+                <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                Student Demo
               </button>
             </div>
           </div>

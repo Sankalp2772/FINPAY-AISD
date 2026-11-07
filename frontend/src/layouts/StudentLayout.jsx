@@ -33,22 +33,22 @@ export const StudentLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-slate-50/60 font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed inset-y-0">
+      <aside className="w-64 bg-white/90 backdrop-blur-md border-r border-slate-200/80 flex flex-col fixed inset-y-0 shadow-sm z-20">
         {/* Brand */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-100 gap-3">
-          <div className="bg-blue-600 text-white p-2 rounded-xl shadow-sm shadow-blue-200">
-            <CreditCard className="w-6 h-6" />
+        <div className="h-18 flex items-center px-6 border-b border-slate-100 gap-3.5">
+          <div className="bg-gradient-to-tr from-indigo-600 to-blue-500 text-white p-2.5 rounded-2xl shadow-md shadow-indigo-500/20">
+            <CreditCard className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-slate-900 leading-tight">FinPay</h1>
-            <p className="text-xs text-blue-600 font-medium">Student Portal</p>
+            <h1 className="font-extrabold text-lg text-slate-900 tracking-tight leading-tight">FinPay</h1>
+            <p className="text-[11px] text-indigo-600 font-semibold uppercase tracking-wider">Student Wallet</p>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 px-3.5 py-6 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -57,14 +57,14 @@ export const StudentLayout = () => {
                 to={item.path}
                 end={item.path === '/student'}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                     isActive
-                      ? 'bg-blue-50 text-blue-600 font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-indigo-50 text-indigo-600 font-semibold shadow-xs ring-1 ring-indigo-200/60'
+                      : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900'
                   }`
                 }
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="w-4.5 h-4.5 flex-shrink-0" />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -74,7 +74,7 @@ export const StudentLayout = () => {
         {/* User Card & Logout */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">
               {user?.fullName?.charAt(0) || 'S'}
             </div>
             <div className="flex-1 min-w-0">
