@@ -1,0 +1,225 @@
+// D:\finpay-app\backend\prisma\schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+enum StudentStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN
+}
+
+enum TxType {
+  PAYMENT
+  CASHBACK
+  TOPUP
+  REFUND
+}
+
+enum TxDirection {
+  DEBIT
+  CREDIT
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+enum RuleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student   Student?
+
+  @@map("users")
+}
+
+model Student {
+  id            Int           @id @default(autoincrement())
+  userId        Int           @unique
+  studentIdCard String        @unique
+  department    String
+  semester      String
+  phone         String?
+  status        StudentStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet        Wallet?
+
+  @@map("students")
+}
+
+model Wallet {
+  id           Int          @id @default(autoincrement())
+  studentId    Int          @unique
+  walletNumber String       @unique
+  balance      Decimal      @default(0.00) @db.Decimal(12, 2)
+  currency     String       @default("INR")
+  status       WalletStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  student             Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  transactions        WalletTransaction[]
+  paymentTransactions PaymentTransaction[]
+  cashbackRecords     CashbackRecord[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id              Int         @id @default(autoincrement())
+  walletId        Int
+  transactionRef  String      @unique
+  type            TxType
+  direction       TxDirection
+  amount          Decimal     @db.Decimal(12, 2)
+  balanceBefore   Decimal     @db.Decimal(12, 2)
+  balanceAfter    Decimal     @db.Decimal(12, 2)
+  description     String
+  referenceEntity String?
+  referenceId     Int?
+  createdAt       DateTime    @default(now())
+
+  wallet          Wallet      @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("wallet_transactions")
+}
+
+model MerchantCategory {
+  id          Int        @id @default(autoincrement())
+  code        String     @unique
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  merchants   Merchant[]
+
+  @@map("merchant_categories")
+}
+
+model Merchant {
+  id           Int              @id @default(autoincrement())
+  categoryId   Int
+  merchantCode String           @unique
+  name         String
+  contactEmail String
+  phone        String
+  location     String
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  category     MerchantCategory @relation(fields: [categoryId], references: [id])
+  payments     PaymentTransaction[]
+  cashbackRules CashbackRule[]
+
+  @@index([categoryId])
+  @@map("merchants")
+}
+
+model PaymentTransaction {
+  id             Int           @id @default(autoincrement())
+  paymentRef     String        @unique
+  walletId       Int
+  merchantId     Int
+  amount         Decimal       @db.Decimal(12, 2)
+  status         PaymentStatus @default(SUCCESS)
+  failureReason  String?
+  cashbackAmount Decimal       @default(0.00) @db.Decimal(12, 2)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  wallet         Wallet        @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  merchant       Merchant      @relation(fields: [merchantId], references: [id])
+  cashbackRecord CashbackRecord?
+
+  @@index([walletId])
+  @@index([merchantId])
+  @@index([createdAt])
+  @@map("payment_transactions")
+}
+
+model CashbackRule {
+  id              Int         @id @default(autoincrement())
+  merchantId      Int?
+  title           String
+  percentage      Decimal     @db.Decimal(5, 2)
+  minSpend        Decimal     @default(0.00) @db.Decimal(12, 2)
+  maxCashback     Decimal?    @db.Decimal(12, 2)
+  status          RuleStatus  @default(ACTIVE)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  merchant        Merchant?   @relation(fields: [merchantId], references: [id], onDelete: SetNull)
+
+  @@index([merchantId])
+  @@map("cashback_rules")
+}
+
+model CashbackRecord {
+  id                   Int                @id @default(autoincrement())
+  paymentTransactionId Int                @unique
+  walletId             Int
+  amount               Decimal            @db.Decimal(12, 2)
+  percentageApplied    Decimal            @db.Decimal(5, 2)
+  creditedAt           DateTime           @default(now())
+
+  paymentTransaction   PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+  wallet               Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@index([creditedAt])
+  @@map("cashback_records")
+}
+
+model Reconciliation {
+  id                     Int      @id @default(autoincrement())
+  year                   Int
+  month                  Int
+  totalPaymentsCount     Int      @default(0)
+  totalPaymentAmount     Decimal  @default(0.00) @db.Decimal(14, 2)
+  eligiblePaymentsCount  Int      @default(0)
+  eligiblePaymentAmount  Decimal  @default(0.00) @db.Decimal(14, 2)
+  totalCashbackCredited  Decimal  @default(0.00) @db.Decimal(14, 2)
+  expectedCashbackAmount Decimal  @default(0.00) @db.Decimal(14, 2)
+  differenceAmount       Decimal  @default(0.00) @db.Decimal(14, 2)
+  generatedAt            DateTime @default(now())
+  reconciledBy           String   @default("System Admin")
+
+  @@unique([year, month])
+  @@map("reconciliations")
+}
